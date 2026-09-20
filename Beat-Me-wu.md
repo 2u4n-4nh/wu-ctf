@@ -246,54 +246,7 @@ Truy cập vào hàm được gọi đến:
 
 void __fastcall sub_140036EF0(__int64 a1, __int64 a2)
 {
-  int v2; // eax
-  HANDLE CurrentProcess; // rax
-  bool NextFileW; // [rsp+4Bh] [rbp-235Dh]
-  int v5; // [rsp+4Ch] [rbp-235Ch]
-  bool v6; // [rsp+67h] [rbp-2341h]
-  unsigned int v7; // [rsp+70h] [rbp-2338h]
-  int i; // [rsp+74h] [rbp-2334h]
-  int k; // [rsp+74h] [rbp-2334h]
-  DWORD v12; // [rsp+8Ch] [rbp-231Ch]
-  WCHAR Dst[266]; // [rsp+90h] [rbp-2318h] BYREF
-  DWORD j; // [rsp+2A4h] [rbp-2104h]
-  struct _ENUM_SERVICE_STATUSW *p_Services; // [rsp+2A8h] [rbp-2100h]
-  struct _ENUM_SERVICE_STATUSW Services; // [rsp+2B0h] [rbp-20F8h] BYREF
-  DWORD ResumeHandle; // [rsp+12B4h] [rbp-10F4h] BYREF
-  DWORD ServicesReturned; // [rsp+12B8h] [rbp-10F0h] BYREF
-  DWORD pcbBytesNeeded; // [rsp+12BCh] [rbp-10ECh] BYREF
-  SC_HANDLE hSCManager; // [rsp+12C0h] [rbp-10E8h]
-  LARGE_INTEGER PerformanceCount; // [rsp+12C8h] [rbp-10E0h] BYREF
-  LARGE_INTEGER Frequency; // [rsp+12D0h] [rbp-10D8h] BYREF
-  PROCESS_MEMORY_COUNTERS ppsmemCounters; // [rsp+12D8h] [rbp-10D0h] BYREF
-  WCHAR TempFileName[264]; // [rsp+1320h] [rbp-1088h] BYREF
-  WCHAR Buffer[260]; // [rsp+1530h] [rbp-E78h] BYREF
-  HANDLE hFindFile; // [rsp+1738h] [rbp-C70h]
-  struct _WIN32_FIND_DATAW FindFileData; // [rsp+1740h] [rbp-C68h] BYREF
-  DWORD v28; // [rsp+1990h] [rbp-A18h]
-  DWORD dwErrCode; // [rsp+1994h] [rbp-A14h]
-  __int64 v30; // [rsp+1998h] [rbp-A10h]
-  __int64 v31; // [rsp+19A0h] [rbp-A08h]
-  DWORD v32; // [rsp+19ACh] [rbp-9FCh]
-  WCHAR v33[260]; // [rsp+19B0h] [rbp-9F8h] BYREF
-  DWORD pdwDataLen; // [rsp+1BB8h] [rbp-7F0h] BYREF
-  BYTE pbData[4]; // [rsp+1BBCh] [rbp-7ECh] BYREF
-  HCRYPTPROV phProv; // [rsp+1BC0h] [rbp-7E8h] BYREF
-  struct _SYSTEM_INFO SystemInfo; // [rsp+1BC8h] [rbp-7E0h] BYREF
-  DWORD cbData; // [rsp+1BFCh] [rbp-7ACh] BYREF
-  BYTE Data[264]; // [rsp+1C00h] [rbp-7A8h] BYREF
-  HKEY hKey; // [rsp+1D08h] [rbp-6A0h] BYREF
-  int v41; // [rsp+1D14h] [rbp-694h]
-  HANDLE FirstFileW; // [rsp+1D18h] [rbp-690h]
-  struct _WIN32_FIND_DATAW v43; // [rsp+1D20h] [rbp-688h] BYREF
-  WCHAR String1[264]; // [rsp+1F70h] [rbp-438h] BYREF
-  WCHAR String2[260]; // [rsp+2180h] [rbp-228h] BYREF
-  HKEY phkResult; // [rsp+2388h] [rbp-20h] BYREF
-  DWORD v47; // [rsp+2390h] [rbp-18h]
-  DWORD LastError; // [rsp+2394h] [rbp-14h]
-  __int64 v49; // [rsp+2398h] [rbp-10h]
-  __int64 v50; // [rsp+23A0h] [rbp-8h]
-
+....
   for ( i = 0; i < 8; ++i )
   {
     v31 = (unsigned int)(4 * i);
@@ -426,3 +379,7 @@ void __fastcall sub_140036EF0(__int64 a1, __int64 a2)
 
 ```
 
+Qua đoạn code trên, từ lệnh `RegOpenKeyExW` thì ta biết được đây là lệnh lấy key có sẵn trên hệ thống.
+Do đó để tìm được key thì phải debug bài này ở đoạn chính này. 
+Nhưng do đây có thể là mã độc nên ta sẽ debug thử trong máy ảo.
+Đặt break point ở hàm `start`, 
