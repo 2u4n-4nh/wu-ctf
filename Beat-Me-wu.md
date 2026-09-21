@@ -34,12 +34,7 @@ Truy cập vào trong từng hàm để kiểm tra từng chức năng của hà
 
 uintptr_t sub_140A49F40()
 {
-  uintptr_t result; // rax
-  uintptr_t v1; // rcx
-  struct _FILETIME v2; // [rsp+20h] [rbp-18h] BYREF
-  struct _FILETIME SystemTimeAsFileTime; // [rsp+40h] [rbp+8h] BYREF
-  LARGE_INTEGER PerformanceCount; // [rsp+48h] [rbp+10h] BYREF
-
+...
   if ( _security_cookie == 0x2B992DDFA232LL )
   {
     SystemTimeAsFileTime = 0;
@@ -78,19 +73,7 @@ Tiếp tục kiểm tra hàm còn lại:
 
 __int64 sub_140A49730()
 {
-  __int64 v0; // rcx
-  char v1; // si
-  unsigned __int8 v2; // bl
-  _QWORD *v4; // rax
-  void (__fastcall **v5)(_QWORD, __int64, _QWORD); // rbx
-  _QWORD *v6; // rax
-  _QWORD *v7; // rbx
-  __int64 v8; // rdi
-  __int64 v9; // rbx
-  unsigned int *v10; // rax
-  unsigned int v11; // ebx
-  __int64 v12; // rcx
-
+....
   if ( !(unsigned __int8)sub_140A49C30(1) )
     RtlFailFast(7);
   v1 = 0;
@@ -144,10 +127,7 @@ Truy cập thử vào trong hàm `sub_1400010D0`:
 
 __int64 sub_1400010D0()
 {
-  DWORD v1; // [rsp+2Ch] [rbp-10Ch]
-  CHAR Dst[260]; // [rsp+30h] [rbp-108h] BYREF
-  int v3; // [rsp+134h] [rbp-4h]
-
+....
   v3 = 0;
   v1 = ExpandEnvironmentStringsA("%USERPROFILE%\\Desktop\\target", Dst, 0x104u);
   if ( v1 && v1 <= 0x104 )
@@ -382,4 +362,6 @@ void __fastcall sub_140036EF0(__int64 a1, __int64 a2)
 Qua đoạn code trên, từ lệnh `RegOpenKeyExW` thì ta biết được đây là lệnh lấy key có sẵn trên hệ thống.
 Do đó để tìm được key thì phải debug bài này ở đoạn chính này. 
 Nhưng do đây có thể là mã độc nên ta sẽ debug thử trong máy ảo.
-Đặt break point ở hàm `start`, 
+Đặt break point ở hàm `start`, ta sẽ step over vào trong hàm thuật toán và chạy nó để xem đoạn mã key gen là gì
+
+
