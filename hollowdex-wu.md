@@ -361,4 +361,137 @@ Trong đoạn code này ta thấy nó có tìm và khởi tạo hàm `verifyFlag
 
 ```
 
-Sử dụng
+Đoạn mã giải thuật toán này dựa vào key cố định
+
+```
+
+import hashlib, zlib, struct
+
+# Key trích từ local_260[0..15] trong JNI_OnLoad
+KEY = bytes([
+    0x59, 0x0E, 0x7A, 0x65, 0x14, 0xC3, 0xBE, 0xA1,
+    0xE3, 0xC1, 0xE7, 0x81, 0xE3, 0xC1, 0xEF, 0x01,
+])
+
+with open("classes.dex", "rb") as f:
+    dex = bytearray(f.read())
+
+CODE_ITEM_OFFSET = 0x62C          # offset code_item của verifyFlag trong DEX
+insns_size = struct.unpack_from("<I", dex, CODE_ITEM_OFFSET + 12)[0]
+insns_off  = CODE_ITEM_OFFSET + 16
+n_bytes    = insns_size * 2       # 156 * 2 = 312 byte
+
+# Công thức lấy đúng từ JNI_OnLoad: buf[i] = key[i&0xF] ^ insns_goc[i]
+for i in range(n_bytes):
+    dex[insns_off + i] ^= KEY[i & 0xF]
+
+# Sửa lại checksum để DEX hợp lệ
+dex[8:28] = hashlib.sha1(bytes(dex[32:])).digest()
+dex[8:12] = struct.pack("<I", zlib.adler32(bytes(dex[12:])) & 0xFFFFFFFF)
+
+with open("classes_patched.dex", "wb") as f:
+    f.write(dex)
+
+print("Đã patch xong -> classes_patched.dex (verifyFlag giờ đọc được)")
+
+```
+
+Sau khi giải thuật toán này ta được file chứa hàm `verityFlag`.
+Ném file chứa thuật toán vào rong ghidra và mở hàm `verityFlag`:
+
+```
+
+
+/* Flags:
+     ACC_PUBLIC
+   
+   public boolean verifyFlag(java.lang.String)  */
+
+boolean verifyFlag_java.lang.String_boolean(Verifier this,String param1)
+
+{
+  long lVar1;
+  int iVar2;
+  char cVar5;
+  int iVar3;
+  int iVar4;
+  undefined4 uVar6;
+  byte bVar7;
+  long lVar8;
+  long lVar9;
+  byte[] pbVar10;
+  
+  uVar6 = 0;
+  if ((param1 != null) && (iVar2 = param1.length(), iVar2 == 0x20)) {
+    pbVar10 = new byte[0x10];
+    iVar2 = 0;
+    while( true ) {
+      bVar7 = (byte)uVar6;
+      if (0xf < iVar2) {
+        lVar8 = 0;
+        lVar9 = 0;
+        for (iVar2 = 0; iVar2 < 8; iVar2 = iVar2 + 1) {
+          lVar9 = lVar9 << 8 | (long)(int)pbVar10[iVar2] & 0xff;
+        }
+        for (iVar2 = 0; iVar2 < 8; iVar2 = iVar2 + 1) {
+          lVar8 = lVar8 << 8 | (long)(int)pbVar10[iVar2 + 8] & 0xff;
+        }
+        lVar1 = lVar9 ^ (lVar8 + 0x243f6a8885a308d3 >>> 0x2f |
+                        (lVar8 + 0x243f6a8885a308d3) * 0x20000) ^ 0x243f6a8885a308d3;
+        lVar9 = lVar1 + 0x13198a2e03707344;
+        lVar8 = lVar8 ^ (lVar9 >>> 0x2f | lVar9 * 0x20000) ^ 0x13198a2e03707344;
+        lVar9 = lVar8 + -0x5bf6c7ddd660ce30;
+        if ((lVar1 ^ (lVar9 >>> 0x2f | lVar9 * 0x20000)) == 0x10b5548c10df3aaa) {
+          bVar7 = 1;
+        }
+        return (boolean)(lVar8 == 0x554d47c35cf8ea95 & bVar7);
+      }
+      iVar4 = iVar2 * 2;
+      cVar5 = param1.charAt(iVar4);
+      iVar3 = Character.digit(cVar5,0x10);
+      cVar5 = param1.charAt(iVar4 + 1);
+      iVar4 = Character.digit(cVar5,0x10);
+      if ((iVar3 < 0) || (iVar4 < 0)) break;
+      pbVar10[iVar2] = (byte)iVar4 | (byte)(iVar3 << 4);
+      iVar2 = iVar2 + 1;
+    }
+    return false;
+  }
+  return false;
+}
+
+
+
+```
+
+Đoạn code giải mã thuật toán để ra Flag:
+
+```
+
+import hashlib
+
+M = (1 << 64) - 1
+C1 = 0x243F6A8885A308D3
+C2 = 0x13198A2E03707344
+C3 = 0xA4093822299F31D0
+C4 = 0x554D47C35CF8EA95
+C5 = 0xB4BC6CAE39400B7A
+
+def R(x):
+    x &= M
+    return ((x << 17) | (x >> 47)) & M
+
+c = C5 ^ R((C4 + C3) & M) ^ C3
+Q = C4 ^ R((c  + C2) & M) ^ C2
+P = c  ^ R((Q  + C1) & M) ^ C1
+
+preimage_hex = f"{P:016X}{Q:016X}".lower()
+print("Preimage hex :", preimage_hex)
+
+raw = bytes.fromhex(preimage_hex)
+flag = hashlib.sha256(raw).hexdigest()
+print("Flag         : CTF{" + flag + "}")
+
+```
+
+Sau đó ta thu được flag là `CTF{7295614c872c071d88fe8b29b5af155fd44f837b5d986f5d74a2524de883241b}`
