@@ -152,11 +152,12 @@ __int64 sub_1400010D0()
 
 ```
 
+Ta đổi tên hàm `sub_140001170` thành hàm `main`
 Ta thấy một được dẫn tìm file được truyền cho biến `Dst` và ngay bên dưới nó sẽ kiếm tra xem đường dẫn tuyền vào có thư mục chứa cần tìm không, nếu không thì sẽ trả về 1 biểu thị mã lỗi là 1.
 Còn không thì sẽ gọi đến 3 hàm khác nhau để thực hiện.
 Từ đó ta thấy được đây chính xác là hàm main chính và một trong 3 hàm kia sẽ có hàm thuật toán và hàm mã độc.
 Ta sẽ thử kiểm tra với những hàm mà truyền vào biến `Dst`.
-Trong hàm `sub_140001170` ta thấy được rằng nó sẽ tìm tất cả file có trong thư mục mà biến `Dst` được truyền vào thông qua vòng lặp:
+Trong hàm `main` ta thấy được rằng nó sẽ tìm tất cả file có trong thư mục mà biến `Dst` được truyền vào thông qua vòng lặp:
 
 ```
 
@@ -362,6 +363,52 @@ void __fastcall sub_140036EF0(__int64 a1, __int64 a2)
 Qua đoạn code trên, từ lệnh `RegOpenKeyExW` thì ta biết được đây là lệnh lấy key có sẵn trên hệ thống.
 Do đó để tìm được key thì phải debug bài này ở đoạn chính này. 
 Nhưng do đây có thể là mã độc nên ta sẽ debug thử trong máy ảo.
-Đặt break point ở hàm `start`, ta sẽ step over vào trong hàm thuật toán và chạy nó để xem đoạn mã key gen là gì
+Đặt break point ở hàm `start`, ta sẽ step over vào trong hàm thuật toán và chạy nó để xem đoạn mã key gen là gì.
 
+Ta liên tục step over đến đoạn:
 
+```
+
+.text:0000000140A49770 test    ecx, ecx
+.text:0000000140A49772 jnz     short loc_140A497BE
+
+```
+
+Ta phải thay đổi ZF để vượt qua đoạn này để có thể đi vào hàm `main` mà không bị chặn.
+Ta tiếp tục stepover đến hàm main thật.
+Vào trong hàm `main`, ta tiếp tục stepover đến đoạn `.text:000000014000112A jnz     short loc_140001139` thì phải thay đổi flag thì mới có thể truy cập được vào hàm `sub_140036EF0`
+
+Trong hàm thuật toán ta thấy `0000000140ABD4E0 .rdata → "MSEC_UNWINDCRYPT"`.
+Thuật toán ASE-256 cần 32 byte key đầu vào, ta thử vào địa chỉ `0000000140ABD4E0` thì thấy đúng 32-byte:
+
+<img width="655" height="52" alt="image" src="https://github.com/user-attachments/assets/68267841-d6b6-494f-93c6-1f3b2a58e796" />
+
+Viết phương trình chạy AES-256 chuẩn thì ta nhận được 1 chuỗi vô nghĩa.
+Do đó, ta thử suy tính nếu có sự thay đổi trong vòng lặp thuật toán trong việc giải mã.
+Ta chạy AI để nó tìm ra được thuật toán chuẩn.
+
+Giải mã đoạn thuật toán thì ta thu được file flag.txt mà k bị mã hoá:
+
+```
+
+==============================================
+Cuộc đời vẫn đẹp sao 
+Tình yêu vẫn đẹp sao 
+Dù đạn bom man rợ thét gào 
+Dù thân thể thiên nhiên mang đầy thương tích 
+Dù xa cách hai ngả đường chiến dịch 
+Ta vẫn còn chung nhau một ánh trăng ngần. 
+Một tiếng chim ngân, một làn gió biển 
+Một sớm mai xuân trước căn hầm dã chiến 
+Thấy trời xanh xao xuyến ở trên đầu 
+Ta vẫn thầm hái hoa tặng nhau. 
+Ôi trái tim Việt Nam như mặt trời trước ngực 
+Giữa thế kỷ hai mươi cháy rực 
+Sáng ngàn năm.. ngàn năm...
+==============================================
+Y0u_ar3_the_0nly_Exception_wh0_h4s_b3aten_me
+==============================================
+
+```
+
+Flag là MTA60{Y0u_ar3_the_0nly_Exception_wh0_h4s_b3aten_me}
