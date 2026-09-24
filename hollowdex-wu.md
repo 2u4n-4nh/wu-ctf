@@ -137,4 +137,228 @@ Ta thấy có file `classes.dex` ở trong, để đọc file đó thì ta dụn
 ```
 
 Trong đoạn code trên thì đoạn này nó cũng giống như đoạn code bên trên là cũng bị chặn bởi tác giả nên ta chuyển sang xem thử file `libhollowdex.so`.
-Ném file này vào ghidra và tìm hàm `JNI_OnLoad` 
+Ném file này vào ghidra và tìm hàm `JNI_OnLoad` :
+
+```
+
+
+undefined4 JNI_OnLoad(long *param_1)
+
+{
+  char *__offset;
+  uint uVar1;
+  int iVar2;
+  long lVar3;
+  FILE *__stream;
+  char *pcVar4;
+  void *__buf;
+  ulong uVar5;
+  ulong uVar6;
+  undefined8 *puVar7;
+  ulong __n;
+  undefined8 uVar8;
+  undefined8 uVar9;
+  undefined8 uVar10;
+  undefined8 uVar11;
+  long *local_270;
+  undefined1 auStack_268 [8];
+  char local_260 [16];
+  undefined8 uStack_250;
+  undefined8 uStack_248;
+  char *local_48;
+  
+  local_270 = (long *)0x0;
+  iVar2 = (**(code **)(*param_1 + 0x30))(param_1,&local_270,0x10006);
+  if (((iVar2 != 0) ||
+      (lVar3 = (**(code **)(*local_270 + 0x30))(local_270,"com/hollowdex/Verifier"), lVar3 == 0)) ||
+     (lVar3 = (**(code **)(*local_270 + 0x108))
+                        (local_270,lVar3,"verifyFlag","(Ljava/lang/String;)Z"), lVar3 == 0)) {
+    return 0xffffffff;
+  }
+  uVar1 = *(uint *)(lVar3 + 8);
+  __stream = fopen("/proc/self/maps","r");
+  if (__stream == (FILE *)0x0) {
+    return 0x10006;
+  }
+  pcVar4 = fgets(local_260,0x200,__stream);
+  while (pcVar4 != (char *)0x0) {
+    pcVar4 = strstr(local_260,".apk");
+    if ((((pcVar4 != (char *)0x0) &&
+         ((pcVar4 = strstr(local_260,"r--p"), pcVar4 != (char *)0x0 ||
+          (pcVar4 = strstr(local_260,"r-xp"), pcVar4 != (char *)0x0)))) &&
+        (iVar2 = sscanf(local_260,"%lx-%lx",&local_48,auStack_268), iVar2 == 2)) &&
+       (((*local_48 == 'd' && (local_48[1] == 'e')) &&
+        ((local_48[2] == 'x' && (pcVar4 = local_48, local_48[3] == '\n')))))) goto LAB_00101aa8;
+    pcVar4 = fgets(local_260,0x200,__stream);
+  }
+  pcVar4 = (char *)0x0;
+LAB_00101aa8:
+  fclose(__stream);
+  if (pcVar4 == (char *)0x0) {
+    return 0x10006;
+  }
+  if (uVar1 == 0) {
+    return 0x10006;
+  }
+  pcVar4 = pcVar4 + uVar1;
+  __offset = pcVar4 + 0x10;
+  uVar1 = *(int *)(pcVar4 + 0xc) << 1;
+  __n = (ulong)uVar1;
+  local_260[8] = -0x1d;
+  local_260[9] = -0x3f;
+  local_260[10] = -0x19;
+  local_260[0xb] = -0x7f;
+  local_260[0xc] = -0x1d;
+  local_260[0xd] = -0x3f;
+  local_260[0xe] = -0x11;
+  local_260[0xf] = '\x01';
+  local_260[0] = 'Y';
+  local_260[1] = '\x0e';
+  local_260[2] = 'z';
+  local_260[3] = 'e';
+  local_260[4] = '\x14';
+  local_260[5] = -0x3d;
+  local_260[6] = -0x42;
+  local_260[7] = -0x5f;
+  __buf = operator.new[](__n);
+  if (uVar1 != 0) {
+    uVar5 = 0;
+    if (((7 < uVar1) && (0xffffffffffffffef < __n - 0x11)) &&
+       (0x1f < (ulong)((long)__buf - (long)__offset))) {
+      if (0x1f < uVar1) {
+        puVar7 = (undefined8 *)((long)__buf + 0x10);
+        do {
+          uVar9 = *(undefined8 *)(pcVar4 + 0x18);
+          uVar8 = *(undefined8 *)(pcVar4 + 0x10);
+          uVar11 = *(undefined8 *)(pcVar4 + 0x28);
+          uVar10 = *(undefined8 *)(pcVar4 + 0x20);
+          puVar7[-1] = CONCAT17(SUB81(local_260._8_8_,7) ^ (byte)((ulong)uVar9 >> 0x38),
+                                CONCAT16(SUB81(local_260._8_8_,6) ^ (byte)((ulong)uVar9 >> 0x30),
+                                         CONCAT15(SUB81(local_260._8_8_,5) ^
+                                                  (byte)((ulong)uVar9 >> 0x28),
+                                                  CONCAT14(SUB81(local_260._8_8_,4) ^
+                                                           (byte)((ulong)uVar9 >> 0x20),
+                                                           CONCAT13(SUB81(local_260._8_8_,3) ^
+                                                                    (byte)((ulong)uVar9 >> 0x18),
+                                                                    CONCAT12(SUB81(local_260._8_8_,2
+                                                                                  ) ^ (byte)((ulong)
+                                                  uVar9 >> 0x10),
+                                                  CONCAT11(SUB81(local_260._8_8_,1) ^
+                                                           (byte)((ulong)uVar9 >> 8),
+                                                           (byte)local_260._8_8_ ^ (byte)uVar9))))))
+                               );
+          puVar7[-2] = CONCAT17(SUB81(local_260._0_8_,7) ^ (byte)((ulong)uVar8 >> 0x38),
+                                CONCAT16(SUB81(local_260._0_8_,6) ^ (byte)((ulong)uVar8 >> 0x30),
+                                         CONCAT15(SUB81(local_260._0_8_,5) ^
+                                                  (byte)((ulong)uVar8 >> 0x28),
+                                                  CONCAT14(SUB81(local_260._0_8_,4) ^
+                                                           (byte)((ulong)uVar8 >> 0x20),
+                                                           CONCAT13(SUB81(local_260._0_8_,3) ^
+                                                                    (byte)((ulong)uVar8 >> 0x18),
+                                                                    CONCAT12(SUB81(local_260._0_8_,2
+                                                                                  ) ^ (byte)((ulong)
+                                                  uVar8 >> 0x10),
+                                                  CONCAT11(SUB81(local_260._0_8_,1) ^
+                                                           (byte)((ulong)uVar8 >> 8),
+                                                           (byte)local_260._0_8_ ^ (byte)uVar8))))))
+                               );
+          puVar7[1] = CONCAT17((byte)((ulong)uStack_248 >> 0x38) ^ (byte)((ulong)uVar11 >> 0x38),
+                               CONCAT16((byte)((ulong)uStack_248 >> 0x30) ^
+                                        (byte)((ulong)uVar11 >> 0x30),
+                                        CONCAT15((byte)((ulong)uStack_248 >> 0x28) ^
+                                                 (byte)((ulong)uVar11 >> 0x28),
+                                                 CONCAT14((byte)((ulong)uStack_248 >> 0x20) ^
+                                                          (byte)((ulong)uVar11 >> 0x20),
+                                                          CONCAT13((byte)((ulong)uStack_248 >> 0x18)
+                                                                   ^ (byte)((ulong)uVar11 >> 0x18),
+                                                                   CONCAT12((byte)((ulong)uStack_248
+                                                                                  >> 0x10) ^
+                                                                            (byte)((ulong)uVar11 >>
+                                                                                  0x10),
+                                                                            CONCAT11((byte)((ulong)
+                                                  uStack_248 >> 8) ^ (byte)((ulong)uVar11 >> 8),
+                                                  (byte)uStack_248 ^ (byte)uVar11)))))));
+          *puVar7 = CONCAT17((byte)((ulong)uStack_250 >> 0x38) ^ (byte)((ulong)uVar10 >> 0x38),
+                             CONCAT16((byte)((ulong)uStack_250 >> 0x30) ^
+                                      (byte)((ulong)uVar10 >> 0x30),
+                                      CONCAT15((byte)((ulong)uStack_250 >> 0x28) ^
+                                               (byte)((ulong)uVar10 >> 0x28),
+                                               CONCAT14((byte)((ulong)uStack_250 >> 0x20) ^
+                                                        (byte)((ulong)uVar10 >> 0x20),
+                                                        CONCAT13((byte)((ulong)uStack_250 >> 0x18) ^
+                                                                 (byte)((ulong)uVar10 >> 0x18),
+                                                                 CONCAT12((byte)((ulong)uStack_250
+                                                                                >> 0x10) ^
+                                                                          (byte)((ulong)uVar10 >>
+                                                                                0x10),
+                                                                          CONCAT11((byte)((ulong)
+                                                  uStack_250 >> 8) ^ (byte)((ulong)uVar10 >> 8),
+                                                  (byte)uStack_250 ^ (byte)uVar10)))))));
+          puVar7 = puVar7 + 4;
+          pcVar4 = pcVar4 + 0x20;
+        } while( true );
+      }
+      uVar6 = 0;
+      uVar5 = __n & 0x18;
+      do {
+        uVar8 = *(undefined8 *)(__offset + uVar6);
+        uVar9 = *(undefined8 *)((ulong)local_260 | uVar6 & 8);
+        *(ulong *)((long)__buf + uVar6) =
+             CONCAT17((byte)((ulong)uVar9 >> 0x38) ^ (byte)((ulong)uVar8 >> 0x38),
+                      CONCAT16((byte)((ulong)uVar9 >> 0x30) ^ (byte)((ulong)uVar8 >> 0x30),
+                               CONCAT15((byte)((ulong)uVar9 >> 0x28) ^ (byte)((ulong)uVar8 >> 0x28),
+                                        CONCAT14((byte)((ulong)uVar9 >> 0x20) ^
+                                                 (byte)((ulong)uVar8 >> 0x20),
+                                                 CONCAT13((byte)((ulong)uVar9 >> 0x18) ^
+                                                          (byte)((ulong)uVar8 >> 0x18),
+                                                          CONCAT12((byte)((ulong)uVar9 >> 0x10) ^
+                                                                   (byte)((ulong)uVar8 >> 0x10),
+                                                                   CONCAT11((byte)((ulong)uVar9 >> 8
+                                                                                  ) ^ (byte)((ulong)
+                                                  uVar8 >> 8),(byte)uVar9 ^ (byte)uVar8)))))));
+        uVar6 = uVar6 + 8;
+      } while (uVar5 != uVar6);
+      if (uVar5 == __n) goto LAB_00101b6c;
+    }
+    do {
+      *(byte *)((long)__buf + uVar5) = *(byte *)((ulong)local_260 | uVar5 & 0xf) ^ __offset[uVar5];
+      uVar5 = uVar5 + 1;
+    } while (__n != uVar5);
+  }
+LAB_00101b6c:
+  iVar2 = open("/proc/self/mem",2);
+  if (-1 < iVar2) {
+    lseek(iVar2,(__off_t)__offset,0);
+    write(iVar2,__buf,__n);
+    close(iVar2);
+  }
+  operator.delete[](__buf);
+  return 0x10006;
+}
+
+```
+
+Trong đoạn code này ta thấy nó có tìm và khởi tạo hàm `verifyFlag`, đồng thời trng đoạn code trên ta cũng thấy các gía trị cố định:
+
+```C
+
+  local_260[8] = -0x1d;
+  local_260[9] = -0x3f;
+  local_260[10] = -0x19;
+  local_260[0xb] = -0x7f;
+  local_260[0xc] = -0x1d;
+  local_260[0xd] = -0x3f;
+  local_260[0xe] = -0x11;
+  local_260[0xf] = '\x01';
+  local_260[0] = 'Y';
+  local_260[1] = '\x0e';
+  local_260[2] = 'z';
+  local_260[3] = 'e';
+  local_260[4] = '\x14';
+  local_260[5] = -0x3d;
+  local_260[6] = -0x42;
+  local_260[7] = -0x5f
+
+```
+
+Sử dụng
